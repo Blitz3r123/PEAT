@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	DDPAT - Current Test Progress
+{% endblock %}
+
+{% block meta %}
+	{% if pending == True %}
+		<meta http-equiv="refresh" content="50"/>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	<div class="row" style="padding-top: 5vh;">
+		<div class="col"></div>
+		<div class="col-8">
+			<h1>Current Test Progress</h1>
+			<table class="table table-bordered table-striped-columns table-hover" style="text-align: center;">
+				<thead>
+					<tr>
+						<th>Test</th>
+						<th>Config</th>
+						<th>Runs</th>
+						<th>Duration</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for test in tests %}
+					{% if "complete" in test["status"] %}
+						<tr class="text-success">
+							<td>{{test["name"]}}</td>
+							<td>{{test["config"]}}</td>
+							<td>{{test["runs"]}}</td>
+							<td>{{test["duration"]}}</td>
+							<td>{{test["status"].title()}}</td>
+						</tr>
+						{% elif "progress" in test["status"] %}
+						<tr style="color: white">
+							<td class="bg-success text-light">{{test["name"]}}</td>
+							<td class="bg-success text-light">{{test["config"]}}</td>
+							<td class="bg-success text-light">{{test["runs"]}}</td>
+							<td class="bg-success text-light">{{test["duration"]}}</td>
+							<td class="bg-success text-light">
+								<div class="spinner-border spinner-border-sm" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							</td>
+						</tr>
+						{% elif "pending" in test["status"] %}
+						<tr class="text-primary">
+							<td>{{test["name"]}}</td>
+							<td>{{test["config"]}}</td>
+							<td>{{test["runs"]}}</td>
+							<td>{{test["duration"]}}</td>
+							<td>{{test["status"].title()}}</td>
+						</tr>
+						{% endif %}
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div class="col"></div>
+	</div>
+{% endblock %}
