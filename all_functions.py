@@ -1,11 +1,17 @@
 import os
+import wmi
+import pythoncom
+from socket import *
 from os.path import exists
 import re
 from datetime import datetime
 from statistics import *
+import pprint
 
 from rich.console import Console
 console = Console(record = True)
+
+pythoncom.CoInitialize()
 
 def get_files(dir_path):
     """
@@ -42,12 +48,6 @@ def get_nums_from_string(text):
         number_list [int]: list of numbers inside of string. 
     """
     return [int(s) for s in re.findall(r'\d+', text)]
-
-"""
-1. Collect all tests defined in test.bat.
-2. For each test, check if it is completed, in progress, or pending.
-"""
-
 
 def collect_defined_tests(testbat_dir):
 	"""
