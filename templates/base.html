@@ -8,9 +8,24 @@
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
 			integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+		<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+		<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 	</head>
 	<body>
-		{% block content %} {% endblock %}
+		<div class="row" style="height: 98vh; max-height: 98vh; overflow-y: hidden; width: 98vw; overflow-x: hidden;">
+			<div class="col-2 nav-col" style="height: 98vh; overflow-y: scroll;">
+				<h1 style="padding: 2vh 0vw 1vh 1vw; border-bottom: 1px solid black;">PEAT</h1>
+				<ul class="list-group list-group-flush">
+					<a href="/" class="list-group-item list-group-item-action nav-link"><ion-icon name="apps-outline" class="nav-link-icon"></ion-icon>Dashboard</a>
+					<a href="/create" class="list-group-item list-group-item-action nav-link"><ion-icon name="create-outline" class="nav-link-icon"></ion-icon>Create</a>
+					<a href="/run" class="list-group-item list-group-item-action nav-link"><ion-icon name="play-outline" class="nav-link-icon"></ion-icon>Run</a>
+					<a href="/analyse" class="list-group-item list-group-item-action nav-link"><ion-icon name="bar-chart-outline" class="nav-link-icon"></ion-icon>Analyse</a>
+				</ul>
+			</div>
+			<div class="col-10">
+				{% block content %} {% endblock %}
+			</div>
+		</div>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
 			integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous">
 		</script>

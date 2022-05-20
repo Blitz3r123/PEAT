@@ -17,4 +17,17 @@ def index():
     defined_tests = collect_defined_tests(testbat_dir)
     assign_test_statuses(defined_tests, testbat_dir)
     pending_tests = [test for test in defined_tests if test["status"] == "pending"]
+    
     return render_template('index.html', tests=defined_tests, pending=True)
+
+@app.route("/create")
+def create():
+    return render_template('create.html')
+
+@app.route("/run")
+def run():
+    return render_template('run.html')
+
+@app.route("/analyse")
+def analyse():
+    return render_template('analyse.html')
