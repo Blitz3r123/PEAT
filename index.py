@@ -1,3 +1,4 @@
+from gc import collect
 from flask import Flask, render_template
 
 from all_functions import *
@@ -48,9 +49,15 @@ def create():
     2. Get all tests that have been defined
     3. Output on create
     """
-    pprint(os.listdir(PATS_DIR))
-    output = os.listdir(PATS_DIR)
-    return render_template('create.html', output=output)
+    data = {
+        "tests": [],
+        "test_amount": 0
+    }
+    
+    data["tests"] = collect_defined_tests()
+    data["test_amount"] = len(collect_defined_tests())
+    
+    return render_template('create.html', data=data)
 
 @app.route("/run")
 def run():

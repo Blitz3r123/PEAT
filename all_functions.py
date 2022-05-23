@@ -180,3 +180,5 @@ def get_current_test():
         name = test["name"]
         if not len([file for file in curdir_files if name in file and 'metadata' in file]) > 0:
             return name
+
+    

@@ -11,42 +11,28 @@ Create
 {% block content %}
 <div class="row container">
 	<div class="col-3">
-		<ul class="list-group">
+		<ul class="list-group" id="create-test-list" style="overflow-y: scroll; max-height: 80vh">
 			<li class="list-group-item text-secondary" style="display: flex; justify-content: start; align-items: center">
-				<ion-icon name="build-outline"></ion-icon><strong style="margin-left: 2%;">60 total tests</strong>
+				<ion-icon name="build-outline"></ion-icon><strong style="margin-left: 2%;">{{data["test_amount"]}} total tests</strong>
 			</li>
-			<a href="/create/{{test_name}}" class="list-group-item list-group-item-action">
-				<h3>test_name_here</h3>
+			{% for test in data["tests"]:%}
+			<a href="/create/{{test['name']}}" class="list-group-item list-group-item-action">
+				<h3 style="overflow-wrap: break-word;">{{test['name']}}</h3>
 				<p style="display: flex; justify-content: space-between; align-items: center;">
 					<span>
-						<span>3P + 3S, </span><br>
-						<span class="text-danger">0P + 0S</span>
+						<strong>3P + 3S, </strong><br>
+						<strong class="text-danger">0P + 0S</strong>
 					</span>
 					<span style="font-size: 1.2em">
-						x 1
+						x {{test['runs']}}
 					</span>
 				</p>
 				<p style="display: flex; justify-content: start; align-items: center;">
 					<ion-icon name="settings-outline"></ion-icon>
-					<span style="margin-left: 2%;">configs/config_01.json</span>
+					<span style="margin-left: 2%;">{{test['config']}}</span>
 				</p>
 			</a>
-			<a href="/create/{{test_name}}" class="list-group-item list-group-item-action">
-				<h3>test_name_here</h3>
-				<p style="display: flex; justify-content: space-between; align-items: center;">
-					<span>
-						<span>3P + 3S, </span><br>
-						<span class="text-danger">0P + 0S</span>
-					</span>
-					<span style="font-size: 1.2em">
-						x 1
-					</span>
-				</p>
-				<p style="display: flex; justify-content: start; align-items: center;">
-					<ion-icon name="settings-outline"></ion-icon>
-					<span style="margin-left: 2%;">configs/config_01.json</span>
-				</p>
-			</a>
+			{% endfor %}
 		</ul>
 	</div>
 	<div class="col-9">
