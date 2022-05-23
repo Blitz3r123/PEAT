@@ -43,12 +43,7 @@ def index():
     return render_template('index.html', data=data)
 
 @app.route("/create")
-def create():
-    """
-    1. Check if test.bat exists
-    2. Get all tests that have been defined
-    3. Output on create
-    """
+def create_base():
     data = {
         "tests": [],
         "test_amount": 0
@@ -58,6 +53,30 @@ def create():
     data["test_amount"] = len(collect_defined_tests())
     
     return render_template('create.html', data=data)
+
+@app.route("/create/<string:test_name>/<string:config_file>")
+def create(test_name, config_file):
+    data = {
+        "tests": [],
+        "test_amount": 0
+    }
+    
+    data = get_test_details(test_name, config_file)
+    data["tests"] = collect_defined_tests()
+    data["test_amount"] = len(collect_defined_tests())
+    data["pub_amount"] = sum(data["pub_alloc"])
+    data["mal_pub_amount"] = sum(data["mal_pub_alloc"])
+    data["sub_amount"] = sum(data["sub_alloc"])
+    data["mal_sub_amount"] = sum(data["mal_sub_alloc"])
+    
+    return render_template(
+        'create_view_test.html', 
+        data=data, 
+        pub_settings=data['pub_settings'], 
+        sub_settings=data['sub_settings'], 
+        mal_pub_settings=data['mal_pub_settings'], 
+        mal_sub_settings=data['mal_sub_settings']
+    )
 
 @app.route("/run")
 def run():

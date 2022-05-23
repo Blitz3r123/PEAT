@@ -154,7 +154,7 @@ def monitor_tests():
     return defined_tests
 
 def get_test_participant_amounts(tests):
-    for test in tests[0:3]:
+    for test in tests:
         config_path = os.path.join(PATS_DIR, "configs")
         config_path = os.path.join(config_path, test["config"])
         with open(config_path, 'r') as f:
@@ -197,4 +197,68 @@ def get_current_test():
         if not len([file for file in curdir_files if name in file and 'metadata' in file]) > 0:
             return name
 
+def get_settings(type, settings):
+    if 'pub' in type:
+        pub_settings = {
+            "dataLen": "",
+            "executionTime": "",
+            "domain": 0,
+            "communication": ""
+        }
+        settings = settings.split(" -")
+        pub_settings["dataLen"] = int([setting for setting in settings if 'dataLen' in setting][0].split(" ")[1])
+        pub_settings["executionTime"] = int([setting for setting in settings if 'executionTime' in setting][0].split(" ")[1])
+        pub_settings["domain"] = int(get_nums_from_string([setting for setting in settings if 'domain' in setting][0].split(" ")[1])[0])
+        if len([setting for setting in settings if 'multicast' in setting]) >= 1:
+            pub_settings["communication"] = "Multicast"
+        else:
+            pub_settings["communication"] = "Unicast"
+            
+        return pub_settings
+    elif 'sub' in type:
+        sub_settings = {
+            "dataLen": "",
+            "domain": 0,
+            "communication": ""
+        }
+        settings = settings.split(" -")
+        sub_settings["dataLen"] = int([setting for setting in settings if 'dataLen' in setting][0].split(" ")[1])
+        sub_settings["domain"] = int(get_nums_from_string([setting for setting in settings if 'domain' in setting][0].split(" ")[1])[0])
+        if len([setting for setting in settings if 'multicast' in setting]) >= 1:
+            sub_settings["communication"] = "Multicast"
+        else:
+            sub_settings["communication"] = "Unicast"
+            
+        return sub_settings
+    else:
+        raise Exception("Type not known in get_settings(%s, %s)" %(type, settings))
+
+def get_test_details(test_name, config_file):
+    test = {
+        "name": "",
+        "sub_alloc": [],
+        "pub_alloc": [],
+        "mal_sub_alloc": [],
+        "mal_pub_alloc": [],
+        "sub_settings": {},
+        "pub_settings": {}
+    }
+    test["name"] = test_name
+    config_path = os.path.join(PATS_DIR, "configs")
+    config_path = os.path.join(config_path, config_file)
+    with open(config_path, 'r') as f:
+        contents = f.readlines()
+        test["pub_alloc"] = get_nums_from_string("".join([line for line in contents if "pub_amount" in line and "mal" not in line]))
+        test["mal_pub_alloc"] = get_nums_from_string("".join([line for line in contents if "mal_pub_amount" in line]))
+        test["sub_alloc"] = get_nums_from_string("".join([line for line in contents if "sub_amount" in line and "mal" not in line]))
+        test["mal_sub_alloc"] = get_nums_from_string("".join([line for line in contents if "mal_sub_amount" in line]))
+        pub_settings = [line for line in contents if 'pub_settings' in line][0]
+        test["pub_settings"] = get_settings('pub', pub_settings)
+        mal_pub_settings = [line for line in contents if 'mal_pub_settings' in line][0]
+        test["mal_pub_settings"] = get_settings('pub', mal_pub_settings)
+        sub_settings = [line for line in contents if 'sub_settings' in line][0]
+        test["sub_settings"] = get_settings('sub', sub_settings)
+        mal_sub_settings = [line for line in contents if 'mal_sub_settings' in line][0]
+        test["mal_sub_settings"] = get_settings('sub', mal_sub_settings)
     
+    return test

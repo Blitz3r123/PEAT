@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	DDPAT - Create Test
+{% endblock %}
+
+{% block pagetitle %}
+Create
+{% endblock %}
+
+{% block content %}
+<div class="row container">
+	<div class="col-3">
+		<ul class="list-group" id="create-test-list" style="overflow-y: scroll; max-height: 80vh">
+			<li class="list-group-item text-secondary" style="display: flex; justify-content: start; align-items: center">
+				<ion-icon name="build-outline"></ion-icon><strong style="margin-left: 2%;">{{data["test_amount"]}} total tests</strong>
+			</li>
+			{% for test in data["tests"]:%}
+                {% if test['name'] in data['name'] %}    
+                <a href="/create/{{test['name']}}/{{test['config']}}" class="list-group-item list-group-item-action active">
+                {% else %}
+                <a href="/create/{{test['name']}}/{{test['config']}}" class="list-group-item list-group-item-action">
+                {% endif %}
+				<h3 style="overflow-wrap: break-word;">{{test['name']}}</h3>
+				<p style="display: flex; justify-content: space-between; align-items: center;">
+					<span>
+						<strong>{{test["pub_amount"]}}P + {{test["sub_amount"]}}S, </strong>
+						<strong class="text-danger">{{test["mal_pub_amount"]}}P + {{test["mal_sub_amount"]}}S</strong>
+					</span>
+					<span style="font-size: 1.2em">
+						x {{test['runs']}}
+					</span>
+				</p>
+				<p style="display: flex; justify-content: start; align-items: center;">
+					<ion-icon name="settings-outline"></ion-icon>
+					<span style="margin-left: 2%;">{{test['config']}}</span>
+				</p>
+			</a>
+			{% endfor %}
+		</ul>
+	</div>
+	<div class="col-9">
+		<div class="card">
+			<div class="card-body" style="max-height: 85vh; overflow-y: scroll;" id="create-test-config-container">
+				<p style="display: flex; justify-content: space-between">
+					<span style="font-size: 2em;">{{data["name"]}}</span>
+					<span style="font-size: 1.5em">x 1</span>
+				</p>
+				<div class="card">
+					<div class="card-header">
+						<h3>Participant Allocation</h3>
+					</div>
+					<div class="card-body">
+						<div class="row">
+							<div class="col-4" style="display: flex; justify-content: center; align-items: center; flex-direction: column">
+								<h1>{{data["pub_amount"]}}P + {{data["sub_amount"]}}S</h1><br>
+								<h1 class="text-danger">{{data["mal_pub_amount"]}}P + {{data["mal_sub_amount"]}}S</h1>
+							</div>
+							<div class="col-8">
+								<div class="row">
+									<div class="col">
+										<div class="card">
+											<div class="card-header">VM 1</div>
+											<div class="card-body vm-allocation">
+												<span class="vm-pubsub-allocation">{{data["pub_alloc"][0]}}P + {{data["sub_alloc"][0]}}S</span><br>
+												<span class="text-danger vm-mal-pubsub-allocation">{{data["mal_pub_alloc"][0]}}P + {{data["mal_sub_alloc"][0]}}S</span>
+											</div>
+										</div>
+									</div>
+									<div class="col">
+										<div class="card">
+											<div class="card-header">VM 2</div>
+											<div class="card-body vm-allocation">
+												<span class="vm-pubsub-allocation">{{data["pub_alloc"][1]}}P + {{data["sub_alloc"][1]}}S</span><br>
+												<span class="text-danger vm-mal-pubsub-allocation">{{data["mal_pub_alloc"][1]}}P + {{data["mal_sub_alloc"][1]}}S</span>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="row" style="margin-top: 5%">
+									<div class="col">
+										<div class="card">
+											<div class="card-header">VM 3</div>
+											<div class="card-body vm-allocation">
+												<span class="vm-pubsub-allocation">{{data["pub_alloc"][2]}}P + {{data["sub_alloc"][2]}}S</span><br>
+												<span class="text-danger vm-mal-pubsub-allocation">{{data["mal_pub_alloc"][2]}}P + {{data["mal_sub_alloc"][2]}}S</span>
+											</div>
+										</div>
+									</div>
+									<div class="col">
+										<div class="card">
+											<div class="card-header">VM 4</div>
+											<div class="card-body vm-allocation">
+												<span class="vm-pubsub-allocation">{{data["pub_alloc"][3]}}P + {{data["sub_alloc"][3]}}S</span><br>
+												<span class="text-danger vm-mal-pubsub-allocation">{{data["mal_pub_alloc"][3]}}P + {{data["mal_sub_alloc"][3]}}S</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row" style="margin-top: 2vh;">
+					<div class="col">
+						<div class="card">
+							<div class="card-header"><h3>Pub Settings</h3></div>
+							<div class="card-body">
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="cube-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{pub_settings["dataLen"]}} Bytes</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="time-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{pub_settings["executionTime"]}} seconds</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="globe-outline"></ion-icon>
+										<span style="margin-left: 1%;">Domain {{pub_settings["domain"]}}</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="git-network-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{pub_settings["communication"]}}</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+                    <div class="col">
+						<div class="card border-danger">
+							<div class="card-header"><h3 class="text-danger">Mal Pub Settings</h3></div>
+							<div class="card-body">
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="cube-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{mal_pub_settings["dataLen"]}} Bytes</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="time-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{mal_pub_settings["executionTime"]}} seconds</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="globe-outline"></ion-icon>
+										<span style="margin-left: 1%;">Domain {{mal_pub_settings["domain"]}}</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="git-network-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{mal_pub_settings["communication"]}}</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="card">
+							<div class="card-header"><h3>Sub Settings</h3></div>
+							<div class="card-body">
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="cube-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{sub_settings["dataLen"]}} Bytes</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="globe-outline"></ion-icon>
+										<span style="margin-left: 1%;">Domain {{sub_settings["domain"]}}</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="git-network-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{sub_settings["communication"]}}</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+                    <div class="col">
+						<div class="card border-danger">
+							<div class="card-header"><h3 class="text-danger">Mal Sub Settings</h3></div>
+							<div class="card-body">
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="cube-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{mal_sub_settings["dataLen"]}} Bytes</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="globe-outline"></ion-icon>
+										<span style="margin-left: 1%;">Domain {{mal_sub_settings["domain"]}}</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="git-network-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{mal_sub_settings["communication"]}}</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

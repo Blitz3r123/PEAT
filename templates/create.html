@@ -16,11 +16,11 @@ Create
 				<ion-icon name="build-outline"></ion-icon><strong style="margin-left: 2%;">{{data["test_amount"]}} total tests</strong>
 			</li>
 			{% for test in data["tests"]:%}
-			<a href="/create/{{test['name']}}" class="list-group-item list-group-item-action">
+			<a href="/create/{{test['name']}}/{{test['config']}}" class="list-group-item list-group-item-action">
 				<h3 style="overflow-wrap: break-word;">{{test['name']}}</h3>
 				<p style="display: flex; justify-content: space-between; align-items: center;">
 					<span>
-						<strong>{{test["pub_amount"]}}P + {{test["sub_amount"]}}S, </strong><br>
+						<strong>{{test["pub_amount"]}}P + {{test["sub_amount"]}}S, </strong>
 						<strong class="text-danger">{{test["mal_pub_amount"]}}P + {{test["mal_sub_amount"]}}S</strong>
 					</span>
 					<span style="font-size: 1.2em">
@@ -37,117 +37,10 @@ Create
 	</div>
 	<div class="col-9">
 		<div class="card">
-			<div class="card-body" style="max-height: 85vh; overflow-y: scroll;" id="create-test-config-container">
-				<p style="display: flex; justify-content: space-between">
-					<span style="font-size: 2em;">test_name_here_as_well</span>
-					<span style="font-size: 1.5em">x 1</span>
-				</p>
-				<div class="card">
-					<div class="card-header">
-						<h3>Participant Allocation</h3>
-					</div>
-					<div class="card-body">
-						<div class="row">
-							<div class="col-4" style="display: flex; justify-content: center; align-items: center; flex-direction: column">
-								<h1>3P + 3S</h1><br>
-								<h1 class="text-danger">0P + 0S</h1>
-							</div>
-							<div class="col-8">
-								<div class="row">
-									<div class="col">
-										<div class="card">
-											<div class="card-header">VM 1</div>
-											<div class="card-body vm-allocation">
-												<span class="vm-pubsub-allocation">1P + 0S</span><br>
-												<span class="text-danger vm-mal-pubsub-allocation">0P + 0S</span>
-											</div>
-										</div>
-									</div>
-									<div class="col">
-										<div class="card">
-											<div class="card-header">VM 2</div>
-											<div class="card-body vm-allocation">
-												<span class="vm-pubsub-allocation">1P + 0S</span><br>
-												<span class="text-danger vm-mal-pubsub-allocation">0P + 0S</span>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="row" style="margin-top: 5%">
-									<div class="col">
-										<div class="card">
-											<div class="card-header">VM 3</div>
-											<div class="card-body vm-allocation">
-												<span class="vm-pubsub-allocation">1P + 0S</span><br>
-												<span class="text-danger vm-mal-pubsub-allocation">0P + 0S</span>
-											</div>
-										</div>
-									</div>
-									<div class="col">
-										<div class="card">
-											<div class="card-header">VM 4</div>
-											<div class="card-body vm-allocation">
-												<span class="vm-pubsub-allocation">1P + 0S</span><br>
-												<span class="text-danger vm-mal-pubsub-allocation">0P + 0S</span>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row" style="margin-top: 2vh;">
-					<div class="col">
-						<div class="card">
-							<div class="card-header"><h3>Pub Settings</h3></div>
-							<div class="card-body">
-								<ul class="list-group list-group-flush">
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="cube-outline"></ion-icon>
-										<span style="margin-left: 1%;">100 Bytes</span>
-									</li>
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="time-outline"></ion-icon>
-										<span style="margin-left: 1%;">21,600 seconds</span>
-									</li>
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="globe-outline"></ion-icon>
-										<span style="margin-left: 1%;">Domain 1</span>
-									</li>
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="git-network-outline"></ion-icon>
-										<span style="margin-left: 1%;">Unicast</span>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="col">
-						<div class="card">
-							<div class="card-header"><h3>Sub Settings</h3></div>
-							<div class="card-body">
-								<ul class="list-group list-group-flush">
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="cube-outline"></ion-icon>
-										<span style="margin-left: 1%;">100 Bytes</span>
-									</li>
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="time-outline"></ion-icon>
-										<span style="margin-left: 1%;">21,600 seconds</span>
-									</li>
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="globe-outline"></ion-icon>
-										<span style="margin-left: 1%;">Domain 1</span>
-									</li>
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="git-network-outline"></ion-icon>
-										<span style="margin-left: 1%;">Unicast</span>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
+			<div class="card-body" style="height: 85vh; display: flex; align-items: center; justify-content: center">
+				<div style="display: flex; justify-content: center; flex-direction: column; align-items: center;">
+					<img style="width: 50%; height: 50%" src="https://img.freepik.com/free-vector/flat-design-biotechnology-concept-illustrated_23-2148893543.jpg?t=st=1653328227~exp=1653328827~hmac=26cfee3280e1b9c0c521a2cfbd9b17deefd28cda09cd44c9210b30e9543e962c&w=740" alt="Empty Test">
+					<p class="text-secondary">Select a test on the left to view it's details.</p>
 				</div>
 			</div>
 		</div>
