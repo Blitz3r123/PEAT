@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-	DDPAT - Create Test
+	PEAT - Create Test
 {% endblock %}
 
 {% block pagetitle %}
@@ -17,11 +17,11 @@ Create
 			</li>
 			{% for test in data["tests"]:%}
                 {% if test['name'] in data['name'] %}    
-                <a href="/create/{{test['name']}}/{{test['config']}}" class="list-group-item list-group-item-action active">
+                    <a href="/create/{{test['name']}}/{{test['config']}}" class="list-group-item list-group-item-action active">
                 {% else %}
-                <a href="/create/{{test['name']}}/{{test['config']}}" class="list-group-item list-group-item-action">
+                    <a href="/create/{{test['name']}}/{{test['config']}}" class="list-group-item list-group-item-action">
                 {% endif %}
-				<h3 style="overflow-wrap: break-word;">{{test['name']}}</h3>
+				<h4 style="overflow-wrap: break-word;">{{test['name']}}</h4>
 				<p style="display: flex; justify-content: space-between; align-items: center;">
 					<span>
 						<strong>{{test["pub_amount"]}}P + {{test["sub_amount"]}}S, </strong>
@@ -60,7 +60,7 @@ Create
 								<div class="row">
 									<div class="col">
 										<div class="card">
-											<div class="card-header">VM 1</div>
+											<div class="card-header text-secondary" style="font-weight: bold; text-align: center;">VM 1</div>
 											<div class="card-body vm-allocation">
 												<span class="vm-pubsub-allocation">{{data["pub_alloc"][0]}}P + {{data["sub_alloc"][0]}}S</span><br>
 												<span class="text-danger vm-mal-pubsub-allocation">{{data["mal_pub_alloc"][0]}}P + {{data["mal_sub_alloc"][0]}}S</span>
@@ -69,7 +69,7 @@ Create
 									</div>
 									<div class="col">
 										<div class="card">
-											<div class="card-header">VM 2</div>
+											<div class="card-header text-secondary" style="font-weight: bold; text-align: center;">VM 2</div>
 											<div class="card-body vm-allocation">
 												<span class="vm-pubsub-allocation">{{data["pub_alloc"][1]}}P + {{data["sub_alloc"][1]}}S</span><br>
 												<span class="text-danger vm-mal-pubsub-allocation">{{data["mal_pub_alloc"][1]}}P + {{data["mal_sub_alloc"][1]}}S</span>
@@ -80,7 +80,7 @@ Create
 								<div class="row" style="margin-top: 5%">
 									<div class="col">
 										<div class="card">
-											<div class="card-header">VM 3</div>
+											<div class="card-header text-secondary" style="font-weight: bold; text-align: center;">VM 3</div>
 											<div class="card-body vm-allocation">
 												<span class="vm-pubsub-allocation">{{data["pub_alloc"][2]}}P + {{data["sub_alloc"][2]}}S</span><br>
 												<span class="text-danger vm-mal-pubsub-allocation">{{data["mal_pub_alloc"][2]}}P + {{data["mal_sub_alloc"][2]}}S</span>
@@ -89,7 +89,7 @@ Create
 									</div>
 									<div class="col">
 										<div class="card">
-											<div class="card-header">VM 4</div>
+											<div class="card-header text-secondary" style="font-weight: bold; text-align: center;">VM 4</div>
 											<div class="card-body vm-allocation">
 												<span class="vm-pubsub-allocation">{{data["pub_alloc"][3]}}P + {{data["sub_alloc"][3]}}S</span><br>
 												<span class="text-danger vm-mal-pubsub-allocation">{{data["mal_pub_alloc"][3]}}P + {{data["mal_sub_alloc"][3]}}S</span>
@@ -127,6 +127,27 @@ Create
 							</div>
 						</div>
 					</div>
+					<div class="col">
+						<div class="card">
+							<div class="card-header"><h3>Sub Settings</h3></div>
+							<div class="card-body">
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="cube-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{sub_settings["dataLen"]}} Bytes</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="globe-outline"></ion-icon>
+										<span style="margin-left: 1%;">Domain {{sub_settings["domain"]}}</span>
+									</li>
+									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
+										<ion-icon name="git-network-outline"></ion-icon>
+										<span style="margin-left: 1%;">{{sub_settings["communication"]}}</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
                     <div class="col">
 						<div class="card border-danger">
 							<div class="card-header"><h3 class="text-danger">Mal Pub Settings</h3></div>
@@ -147,27 +168,6 @@ Create
 									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
 										<ion-icon name="git-network-outline"></ion-icon>
 										<span style="margin-left: 1%;">{{mal_pub_settings["communication"]}}</span>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="col">
-						<div class="card">
-							<div class="card-header"><h3>Sub Settings</h3></div>
-							<div class="card-body">
-								<ul class="list-group list-group-flush">
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="cube-outline"></ion-icon>
-										<span style="margin-left: 1%;">{{sub_settings["dataLen"]}} Bytes</span>
-									</li>
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="globe-outline"></ion-icon>
-										<span style="margin-left: 1%;">Domain {{sub_settings["domain"]}}</span>
-									</li>
-									<li class="list-group-item" style="display: flex; justify-content: start; align-items: center">
-										<ion-icon name="git-network-outline"></ion-icon>
-										<span style="margin-left: 1%;">{{sub_settings["communication"]}}</span>
 									</li>
 								</ul>
 							</div>
