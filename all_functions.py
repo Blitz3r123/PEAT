@@ -1,5 +1,4 @@
 import os
-import wmi
 import pythoncom
 from socket import *
 from os.path import exists
@@ -12,6 +11,8 @@ from rich.console import Console
 console = Console(record = True)
 
 pythoncom.CoInitialize()
+
+PATS_DIR = "C:\\Users\\acwh025\OneDrive - City, University of London\\PhD\\PAT\\PATS"
 
 def get_files(dir_path):
     """
@@ -36,6 +37,33 @@ def get_files(dir_path):
             all_files.append(full_path)
                 
     return all_files
+
+def get_test_amount(type):
+    pats_files = os.listdir(PATS_DIR)
+    if 'queued' in type:
+        if len([file for file in pats_files if 'test.bat' in file]) == 0:
+            raise Exception("test.bat file not found in " + PATS_DIR)
+        else:
+            testbat = os.path.join(PATS_DIR, "test.bat")
+            with open(testbat, 'r') as f:
+                contents = f.readlines()
+                contents = contents[:-1]
+                return len([line for line in contents if '@REM' not in line])
+    elif 'completed' in type:
+        metadata_files = [file for file in pats_files if 'metadata.txt' in file]
+        ran_amount = 0
+        if len([file for file in pats_files if 'test.bat' in file]) == 0:
+            raise Exception("test.bat file not found in " + PATS_DIR)
+        else:
+            testbat = os.path.join(PATS_DIR, "test.bat")
+            with open(testbat, 'r') as f:
+                contents = f.readlines()
+                contents = contents[:-1]
+                for file in metadata_files:
+                    for line in contents:
+                        if file.replace("_metadata.txt", "") in line:
+                            ran_amount += 1
+            return ran_amount
 
 def get_nums_from_string(text):
     """
@@ -124,3 +152,31 @@ def monitor_tests():
     defined_tests = collect_defined_tests(testbat_dir)
     assign_test_statuses(defined_tests, testbat_dir)
     return defined_tests
+
+def collect_defined_tests():
+	defined_tests = []
+	with open(os.path.join(PATS_DIR, 'test.bat'), 'r') as f:
+		contents = f.readlines()
+		for i in range(len(contents)):
+			if 'msg acwh025' not in contents[i]:
+				test = {
+					"name": "",
+					"config": "",
+					"runs": 0,
+					"status": "",
+					"duration": ""
+				}
+				line = contents[i].replace(" --display-config", "").replace(" &", "")
+				if '@REM' not in line:
+					test["name"] = line.split(" ")[2]
+					test["config"] = os.path.basename(line.split(" ")[3])
+					test["runs"] = get_nums_from_string(line.split(" ")[4])[0]
+					defined_tests.append(test)
+	return defined_tests
+
+def get_current_test():
+    curdir_files = get_files(os.path.curdir)
+    for test in collect_defined_tests():
+        name = test["name"]
+        if not len([file for file in curdir_files if name in file and 'metadata' in file]) > 0:
+            return name

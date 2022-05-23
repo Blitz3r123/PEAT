@@ -22,7 +22,7 @@
 					<h3 class="card-title text-primary">Create</h3>
 				</div>
 				<div class="card-body" style="display: flex; flex-direction: column; justify-content: space-between">
-					<p class="card-text"><span class="text-success fw-bold">40</span> tests queued.</p>
+					<p class="card-text"><span class="text-success fw-bold">{{data["queued_test_amount"]}}</span> tests queued.</p>
 					<a href="/create" class="btn btn-primary" style="width: 100%;">View Tests</a>
 				</div>
 			</div>
@@ -37,13 +37,13 @@
 						<div class="spinner-border spinner-border-sm text-success" role="status">
 							<span class="visually-hidden">Loading...</span>
 						</div>
-						<span class="text-success fw-bold">test_name_that_is_currently_running</span>
+						<span class="text-success fw-bold">{{data["current_test"]}}</span>
 					</p>
 					<hr>
 					<p class="card-text">
-						<span class="fw-bold text-success">4</span> 
+						<span class="fw-bold text-success">{{data["completed_test_amount"]}}</span> 
 						out of 
-						<span class="fw-bold text-primary">40</span>
+						<span class="fw-bold text-primary">{{data["queued_test_amount"]}}</span>
 						tests completed with 
 						<a href="/run/issues" class="fw-bold text-danger">3 issues.</a>
 					</p>
