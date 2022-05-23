@@ -34,16 +34,21 @@ def index():
 
 @app.route("/create")
 def create():
-    pythoncom.CoInitialize()
-    ip = get_ip()
-    try:
-        connection = wmi.WMI(ip)
-        if os.path.exists(PATS_DIR):
-            print(get_files(PATS_DIR))
-        output=os.curdir
-    except Exception as e:
-        print(e)
-        output=e
+    # pythoncom.CoInitialize()
+    # # ip = get_ip()
+    # ip = "10.200.51.26"
+    # username = get_username()
+    # password = get_password()
+    # try:
+    #     connection = wmi.WMI(ip, username, password)
+    #     # if os.path.exists(PATS_DIR):
+    #     #     print(get_files(PATS_DIR))
+    #     output=os.curdir
+    # except Exception as e:
+    #     print(e)
+    #     output=e
+    pprint(os.listdir(PATS_DIR))
+    output = os.listdir(PATS_DIR)
     return render_template('create.html', output=output)
 
 @app.route("/run")

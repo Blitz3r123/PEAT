@@ -6,7 +6,7 @@ from os.path import exists
 import re
 from datetime import datetime
 from statistics import *
-import pprint
+from pprint import pprint
 
 from rich.console import Console
 console = Console(record = True)
