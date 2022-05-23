@@ -2,3 +2,7 @@
 .nav-col{scrollbar-width: none; border-right: 1px solid black; padding-right: 0vw;}
 .nav-link{display: flex; justify-content: flex-start; align-items: center; font-weight: 600}
 .nav-link-icon{margin-right: 1vw;}
+
+.vm-allocation{display: flex; justify-content: space-evenly;}
+#create-test-config-container::-webkit-scrollbar{display: none;}
+#create-test-config-container{scrollbar-width: none;}

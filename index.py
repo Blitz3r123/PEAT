@@ -34,19 +34,11 @@ def index():
 
 @app.route("/create")
 def create():
-    # pythoncom.CoInitialize()
-    # # ip = get_ip()
-    # ip = "10.200.51.26"
-    # username = get_username()
-    # password = get_password()
-    # try:
-    #     connection = wmi.WMI(ip, username, password)
-    #     # if os.path.exists(PATS_DIR):
-    #     #     print(get_files(PATS_DIR))
-    #     output=os.curdir
-    # except Exception as e:
-    #     print(e)
-    #     output=e
+    """
+    1. Check if test.bat exists
+    2. Get all tests that have been defined
+    3. Output on create
+    """
     pprint(os.listdir(PATS_DIR))
     output = os.listdir(PATS_DIR)
     return render_template('create.html', output=output)

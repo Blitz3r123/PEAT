@@ -12,7 +12,7 @@
 		<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 	</head>
 	<body>
-		<div class="row" style="height: 98vh; max-height: 98vh; overflow-y: hidden; width: 98vw; overflow-x: hidden;">
+		<div class="row" style="height: 98vh; max-height: 98vh; overflow-y: hidden; width: 100vw; overflow-x: hidden; margin-right: 0 !important;">
 			<div class="col-2 nav-col" style="height: 98vh; overflow-y: scroll;">
 				<h1 style="padding: 2vh 0vw 1vh 1vw; border-bottom: 1px solid black;">PEAT</h1>
 				<ul class="list-group list-group-flush">
@@ -22,7 +22,10 @@
 					<a href="/analyse" class="list-group-item list-group-item-action nav-link"><ion-icon name="bar-chart-outline" class="nav-link-icon"></ion-icon>Analyse</a>
 				</ul>
 			</div>
-			<div class="col-10">
+			<div class="col-10" style="padding-right: 0 !important">
+				<div class="row container" style="padding: 2vh 0vw 1vh 1vw;">
+					<h1>PEAT - {% block pagetitle %}{% endblock %}</h1>
+				</div>
 				{% block content %} {% endblock %}
 			</div>
 		</div>
