@@ -153,26 +153,42 @@ def monitor_tests():
     assign_test_statuses(defined_tests, testbat_dir)
     return defined_tests
 
+def get_test_participant_amounts(tests):
+    for test in tests[0:3]:
+        config_path = os.path.join(PATS_DIR, "configs")
+        config_path = os.path.join(config_path, test["config"])
+        with open(config_path, 'r') as f:
+            contents = f.readlines()
+            pub_amount = sum(get_nums_from_string("".join([line for line in contents if "pub_amount" in line and "mal" not in line])))
+            mal_pub_amount = sum(get_nums_from_string("".join([line for line in contents if "mal_pub_amount" in line])))
+            sub_amount = sum(get_nums_from_string("".join([line for line in contents if "sub_amount" in line and "mal" not in line])))
+            mal_sub_amount = sum(get_nums_from_string("".join([line for line in contents if "mal_sub_amount" in line])))
+        test["sub_amount"] = sub_amount
+        test["mal_sub_amount"] = mal_sub_amount
+        test["pub_amount"] = pub_amount
+        test["mal_pub_amount"] = mal_pub_amount
+
 def collect_defined_tests():
-	defined_tests = []
-	with open(os.path.join(PATS_DIR, 'test.bat'), 'r') as f:
-		contents = f.readlines()
-		for i in range(len(contents)):
-			if 'msg acwh025' not in contents[i]:
-				test = {
-					"name": "",
-					"config": "",
-					"runs": 0,
-					"status": "",
-					"duration": ""
-				}
-				line = contents[i].replace(" --display-config", "").replace(" &", "")
-				if '@REM' not in line:
-					test["name"] = line.split(" ")[2]
-					test["config"] = os.path.basename(line.split(" ")[3])
-					test["runs"] = get_nums_from_string(line.split(" ")[4])[0]
-					defined_tests.append(test)
-	return defined_tests
+    defined_tests = []
+    with open(os.path.join(PATS_DIR, 'test.bat'), 'r') as f:
+        contents = f.readlines()
+        for i in range(len(contents)):
+            if 'msg acwh025' not in contents[i]:
+                test = {
+                    "name": "",
+                    "config": "",
+                    "runs": 0,
+                    "status": "",
+                    "duration": ""
+                }
+                line = contents[i].replace(" --display-config", "").replace(" &", "")
+                if '@REM' not in line:
+                    test["name"] = line.split(" ")[2]
+                    test["config"] = os.path.basename(line.split(" ")[3])
+                    test["runs"] = get_nums_from_string(line.split(" ")[4])[0]
+                    defined_tests.append(test)     
+    get_test_participant_amounts(defined_tests)
+    return defined_tests
 
 def get_current_test():
     curdir_files = get_files(os.path.curdir)

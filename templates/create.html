@@ -20,8 +20,8 @@ Create
 				<h3 style="overflow-wrap: break-word;">{{test['name']}}</h3>
 				<p style="display: flex; justify-content: space-between; align-items: center;">
 					<span>
-						<strong>3P + 3S, </strong><br>
-						<strong class="text-danger">0P + 0S</strong>
+						<strong>{{test["pub_amount"]}}P + {{test["sub_amount"]}}S, </strong><br>
+						<strong class="text-danger">{{test["mal_pub_amount"]}}P + {{test["mal_sub_amount"]}}S</strong>
 					</span>
 					<span style="font-size: 1.2em">
 						x {{test['runs']}}
