@@ -17,7 +17,7 @@ Create
 			</li>
 			{% for test in data["tests"]:%}
 			<a href="/create/{{test['name']}}/{{test['config']}}" class="list-group-item list-group-item-action">
-				<h3 style="overflow-wrap: break-word;">{{test['name']}}</h3>
+				<h4 style="overflow-wrap: break-word;">{{test['name']}}</h4>
 				<p style="display: flex; justify-content: space-between; align-items: center;">
 					<span>
 						<strong>{{test["pub_amount"]}}P + {{test["sub_amount"]}}S, </strong>
