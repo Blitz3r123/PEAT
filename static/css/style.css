@@ -8,5 +8,7 @@
 #create-test-config-container{scrollbar-width: none;}
 #create-test-list::-webkit-scrollbar{display: none;}
 #create-test-list{scrollbar-width: none;}
+#test-title::-webkit-scrollbar{display: none;}
+#test-title{scrollbar-width: none;}
 
 .vm-pubsub-allocation, .vm-mal-pubsub-allocation{font-weight: bold}

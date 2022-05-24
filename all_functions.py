@@ -6,15 +6,31 @@ import re
 from datetime import datetime
 from statistics import *
 from pprint import pprint
+import paramiko
 
 from rich.console import Console
 console = Console(record = True)
 
-pythoncom.CoInitialize()
+from PRIVATE import *
 
-PATS_DIR = "C:\\Users\\acwh025\OneDrive - City, University of London\\PhD\\PAT\\PATS"
+PTS_DIR = "C:/Users/acwh025/Downloads/PTS"
 
-def get_files(dir_path):
+def connect_to_vm():
+    ip = '10.200.51.26'
+    port = 22
+    username = get_username()
+    password = get_password()
+
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    try:
+        ssh.connect(ip, port, username, password)
+        return ssh
+    except Exception as e:
+        console.print(e, style="bold red")
+
+def get_files(ssh, dir_path):
     """
       Gets all the files from the folder stated - including files from subdirectories.
     
@@ -24,46 +40,54 @@ def get_files(dir_path):
       Returns:
         all_files ( [strings] ): Paths of all files.
     """
-    file_list = os.listdir(dir_path)
-    all_files = list()
-    # Iterate over all the entries
-    for entry in file_list:
-        # Create full path
-        full_path = os.path.join(dir_path, entry)
-        # If entry is a directory then get the list of files in this directory 
-        if os.path.isdir(full_path):
-            all_files = all_files + get_files(full_path)
-        else:
-            all_files.append(full_path)
+    if ssh:
+        sftp = ssh.open_sftp()
+        file_list = sftp.listdir(dir_path)
+        all_files = file_list
+        sftp.close()
+    else:
+        file_list = os.listdir(dir_path)
+        all_files = list()
+        # Iterate over all the entries
+        for entry in file_list:
+            # Create full path
+            full_path = os.path.join(dir_path, entry)
+            # If entry is a directory then get the list of files in this directory 
+            if os.path.isdir(full_path):
+                all_files = all_files + get_files(None, full_path)
+            else:
+                all_files.append(full_path)
                 
     return all_files
 
-def get_test_amount(type):
-    pats_files = os.listdir(PATS_DIR)
+def get_test_amount(ssh, type):
+    sftp = ssh.open_sftp()
+    pts_files = sftp.listdir(PTS_DIR)
     if 'queued' in type:
-        if len([file for file in pats_files if 'test.bat' in file]) == 0:
-            raise Exception("test.bat file not found in " + PATS_DIR)
+        if len([file for file in pts_files if 'test.bat' in file]) == 0:
+            raise Exception("test.bat file not found in " + PTS_DIR)
         else:
-            testbat = os.path.join(PATS_DIR, "test.bat")
-            with open(testbat, 'r') as f:
+            testbat = os.path.join(PTS_DIR, "test.bat")
+            with sftp.open(testbat, 'r') as f:
                 contents = f.readlines()
                 contents = contents[:-1]
                 return len([line for line in contents if '@REM' not in line])
     elif 'completed' in type:
-        metadata_files = [file for file in pats_files if 'metadata.txt' in file]
+        metadata_files = [file for file in pts_files if 'metadata.txt' in file]
         ran_amount = 0
-        if len([file for file in pats_files if 'test.bat' in file]) == 0:
-            raise Exception("test.bat file not found in " + PATS_DIR)
+        if len([file for file in pts_files if 'test.bat' in file]) == 0:
+            raise Exception("test.bat file not found in " + PTS_DIR)
         else:
-            testbat = os.path.join(PATS_DIR, "test.bat")
-            with open(testbat, 'r') as f:
+            testbat = os.path.join(PTS_DIR, "test.bat")
+            with sftp.open(testbat, 'r') as f:
                 contents = f.readlines()
                 contents = contents[:-1]
                 for file in metadata_files:
                     for line in contents:
                         if file.replace("_metadata.txt", "") in line:
                             ran_amount += 1
-            return ran_amount
+    sftp.close()
+    return ran_amount
 
 def get_nums_from_string(text):
     """
@@ -76,29 +100,6 @@ def get_nums_from_string(text):
         number_list [int]: list of numbers inside of string. 
     """
     return [int(s) for s in re.findall(r'\d+', text)]
-
-def collect_defined_tests(testbat_dir):
-	"""
-	1. Collect all tests defined in test.bat.
-	"""
-	defined_tests = []
-	with open(testbat_dir, 'r') as f:
-		contents = f.readlines()
-		for i in range(len(contents)):
-			if 'msg acwh025' not in contents[i]:
-				test = {
-					"name": "",
-					"config": "",
-					"runs": 0,
-					"status": "",
-					"duration": ""
-				}
-				line = contents[i].replace(" --display-config", "").replace(" &", "")
-				test["name"] = line.split(" ")[2]
-				test["config"] = os.path.basename(line.split(" ")[3])
-				test["runs"] = get_nums_from_string(line.split(" ")[4])[0]
-				defined_tests.append(test)
-	return defined_tests
 
 def assign_test_statuses(defined_tests, testbat_dir):
     curdir_files = get_files(os.path.dirname(testbat_dir))
@@ -141,9 +142,9 @@ def assign_test_statuses(defined_tests, testbat_dir):
             test["status"] = "pending"
 
 def monitor_tests():
-    PATS_dir = "C:\\Users\\acwh025\OneDrive - City, University of London\\PhD\\PAT\\PATS"
+    PTS_dir = "C:\\Users\\acwh025\OneDrive - City, University of London\\PhD\\PAT\\PATS"
 
-    testbat_dir = os.path.join(PATS_dir, "test.bat")
+    testbat_dir = os.path.join(PTS_dir, "test.bat")
 
     if not exists(testbat_dir):
         console.print("test.bat file not found.", style="bold red")
@@ -153,11 +154,12 @@ def monitor_tests():
     assign_test_statuses(defined_tests, testbat_dir)
     return defined_tests
 
-def get_test_participant_amounts(tests):
+def get_test_participant_amounts(ssh, tests):
+    sftp = ssh.open_sftp()
     for test in tests:
-        config_path = os.path.join(PATS_DIR, "configs")
+        config_path = os.path.join(PTS_DIR, "configs")
         config_path = os.path.join(config_path, test["config"])
-        with open(config_path, 'r') as f:
+        with sftp.open(config_path, 'r') as f:
             contents = f.readlines()
             pub_amount = sum(get_nums_from_string("".join([line for line in contents if "pub_amount" in line and "mal" not in line])))
             mal_pub_amount = sum(get_nums_from_string("".join([line for line in contents if "mal_pub_amount" in line])))
@@ -168,9 +170,10 @@ def get_test_participant_amounts(tests):
         test["pub_amount"] = pub_amount
         test["mal_pub_amount"] = mal_pub_amount
 
-def collect_defined_tests():
+def collect_defined_tests(ssh):
+    sftp = ssh.open_sftp()
     defined_tests = []
-    with open(os.path.join(PATS_DIR, 'test.bat'), 'r') as f:
+    with sftp.open(os.path.join(PTS_DIR, 'test.bat'), 'r') as f:
         contents = f.readlines()
         for i in range(len(contents)):
             if 'msg acwh025' not in contents[i]:
@@ -187,12 +190,12 @@ def collect_defined_tests():
                     test["config"] = os.path.basename(line.split(" ")[3])
                     test["runs"] = get_nums_from_string(line.split(" ")[4])[0]
                     defined_tests.append(test)     
-    get_test_participant_amounts(defined_tests)
+    get_test_participant_amounts(ssh, defined_tests)
     return defined_tests
 
-def get_current_test():
-    curdir_files = get_files(os.path.curdir)
-    for test in collect_defined_tests():
+def get_current_test(ssh):
+    curdir_files = get_files(ssh, PTS_DIR)
+    for test in collect_defined_tests(ssh):
         name = test["name"]
         if not len([file for file in curdir_files if name in file and 'metadata' in file]) > 0:
             return name
@@ -233,7 +236,8 @@ def get_settings(type, settings):
     else:
         raise Exception("Type not known in get_settings(%s, %s)" %(type, settings))
 
-def get_test_details(test_name, config_file):
+def get_test_details(ssh, test_name, config_file):
+    sftp = ssh.open_sftp()
     test = {
         "name": "",
         "sub_alloc": [],
@@ -244,9 +248,9 @@ def get_test_details(test_name, config_file):
         "pub_settings": {}
     }
     test["name"] = test_name
-    config_path = os.path.join(PATS_DIR, "configs")
+    config_path = os.path.join(PTS_DIR, "configs")
     config_path = os.path.join(config_path, config_file)
-    with open(config_path, 'r') as f:
+    with sftp.open(config_path, 'r') as f:
         contents = f.readlines()
         test["pub_alloc"] = get_nums_from_string("".join([line for line in contents if "pub_amount" in line and "mal" not in line]))
         test["mal_pub_alloc"] = get_nums_from_string("".join([line for line in contents if "mal_pub_amount" in line]))

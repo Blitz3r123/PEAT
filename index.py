@@ -6,29 +6,12 @@ from PRIVATE import *
 
 app = Flask(__name__)
 
+PTS_DIR = "C:/Users/acwh025/Downloads/PTS"
+
 @app.route("/")
 def index():
-    # pythoncom.CoInitialize()
-    # ip = get_ip()
-    # try:
-    #     connection = wmi.WMI(ip)
-    #     testbat_dir = os.path.join(PATS_DIR, "test.bat")
-    
-    #     if not exists(testbat_dir):
-    #         console.print("test.bat file not found.", style="bold red")
-    #         raise Exception()
-
-    #     defined_tests = collect_defined_tests(testbat_dir)
-    #     assign_test_statuses(defined_tests, testbat_dir)
-    #     pending_tests = [test for test in defined_tests if test["status"] == "pending"]
-    #     pending = True if len(pending_tests) > 0 else False
+    ssh = connect_to_vm()
         
-    # except Exception as e:
-    #     print(e)
-    #     output=e
-    #     defined_tests = []
-    #     pending=False
-    
     data = {
         "queued_test_amount": 0,
         "completed_test_amount": 0,
@@ -36,34 +19,36 @@ def index():
         "current_test": ""
     }
     
-    data["queued_test_amount"] = get_test_amount('queued')
-    data["completed_test_amount"] = get_test_amount('completed')
-    data["current_test"] = get_current_test()
+    data["queued_test_amount"] = get_test_amount(ssh, 'queued')
+    data["completed_test_amount"] = get_test_amount(ssh, 'completed')
+    data["current_test"] = get_current_test(ssh)
     
     return render_template('index.html', data=data)
 
 @app.route("/create")
 def create_base():
+    ssh = connect_to_vm()
     data = {
         "tests": [],
         "test_amount": 0
     }
     
-    data["tests"] = collect_defined_tests()
-    data["test_amount"] = len(collect_defined_tests())
+    data["tests"] = collect_defined_tests(ssh)
+    data["test_amount"] = len(collect_defined_tests(ssh))
     
     return render_template('create.html', data=data)
 
 @app.route("/create/<string:test_name>/<string:config_file>")
 def create(test_name, config_file):
+    ssh = connect_to_vm()
     data = {
         "tests": [],
         "test_amount": 0
     }
     
-    data = get_test_details(test_name, config_file)
-    data["tests"] = collect_defined_tests()
-    data["test_amount"] = len(collect_defined_tests())
+    data = get_test_details(ssh, test_name, config_file)
+    data["tests"] = collect_defined_tests(ssh)
+    data["test_amount"] = len(collect_defined_tests(ssh))
     data["pub_amount"] = sum(data["pub_alloc"])
     data["mal_pub_amount"] = sum(data["mal_pub_alloc"])
     data["sub_amount"] = sum(data["sub_alloc"])
