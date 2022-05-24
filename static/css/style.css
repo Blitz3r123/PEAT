@@ -4,11 +4,17 @@
 .nav-link-icon{margin-right: 1vw;}
 
 .vm-allocation{display: flex; justify-content: space-evenly;}
-#create-test-config-container::-webkit-scrollbar{display: none;}
-#create-test-config-container{scrollbar-width: none;}
-#create-test-list::-webkit-scrollbar{display: none;}
-#create-test-list{scrollbar-width: none;}
-#test-title::-webkit-scrollbar{display: none;}
-#test-title{scrollbar-width: none;}
+
+#create-test-config-container::-webkit-scrollbar,
+#create-test-list::-webkit-scrollbar,
+#test-title::-webkit-scrollbar, 
+.run-left-col::-webkit-scrollbar
+{display: none;}
+
+#create-test-config-container,
+#create-test-list,
+#test-title, 
+.run-left-col
+{scrollbar-width: none;}
 
 .vm-pubsub-allocation, .vm-mal-pubsub-allocation{font-weight: bold}

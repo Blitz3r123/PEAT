@@ -191,14 +191,22 @@ def collect_defined_tests(ssh):
                     test["runs"] = get_nums_from_string(line.split(" ")[4])[0]
                     defined_tests.append(test)     
     get_test_participant_amounts(ssh, defined_tests)
+    sftp.close()
     return defined_tests
 
 def get_current_test(ssh):
+    sftp = ssh.open_sftp()
     curdir_files = get_files(ssh, PTS_DIR)
-    for test in collect_defined_tests(ssh):
-        name = test["name"]
-        if not len([file for file in curdir_files if name in file and 'metadata' in file]) > 0:
-            return name
+    cur_test = None
+    for file in curdir_files:
+        if 'metadata.txt' in file:
+            with sftp.open(os.path.join(PTS_DIR, file), 'r') as f:
+                contents = f.readlines()
+                if 'Test Duration' not in contents[-1]:
+                    cur_test = file
+        
+    return cur_test
+    sftp.close()                    
 
 def get_settings(type, settings):
     if 'pub' in type:
@@ -264,5 +272,5 @@ def get_test_details(ssh, test_name, config_file):
         test["sub_settings"] = get_settings('sub', sub_settings)
         mal_sub_settings = [line for line in contents if 'mal_sub_settings' in line][0]
         test["mal_sub_settings"] = get_settings('sub', mal_sub_settings)
-    
+    sftp.close()
     return test

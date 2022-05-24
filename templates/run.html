@@ -1,8 +1,168 @@
 {% extends 'base.html' %}
 
 {% block title %}
-	DDPAT - Run Test
+	PEAT - Run Test
+{% endblock %}
+
+{% block pagetitle%}
+	Run
 {% endblock %}
 
 {% block content %}
+<div class="row">
+	<div class="col-4">
+		<div class="card run-left-col" style="max-height: 85vh; overflow-y: scroll;">
+			<div class="card-header">
+				<h1>Current Test</h1>
+			</div>
+			
+			<!-- <div class="card-body" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 85vh;">
+				<img style="width: 80%; height: 50%;" src="https://img.freepik.com/free-vector/deadline-concept-illustration_114360-6003.jpg?t=st=1653417943~exp=1653418543~hmac=9dadc5495d334f9e42db5d00b6e297695d2cf1d988d47b9b130386b4c59dbc07&w=740" alt="">
+				<p class="text-secondary">Looks like no tests are currently running...</p>
+			</div> -->
+
+			<div class="card-body">
+				<h3 style="text-align: center;">test_name_that_is_long</h3>
+				<div class="participant-allocation-container" style="display: flex; justify-content: space-evenly; padding: 1vh 0vw;">
+					<span>1P + 1S</span>
+					<span>1P + 1S</span>
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="card">
+							<div class="card-header">VM 1</div>
+							<div class="card-body">
+								1P + 0S, 0P + 0S
+							</div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="card">
+							<div class="card-header">VM 2</div>
+							<div class="card-body">
+								1P + 0S, 0P + 0S
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row" style="margin-top: 3vh;">
+					<div class="col">
+						<div class="card">
+							<div class="card-header">VM 3</div>
+							<div class="card-body">
+								1P + 0S, 0P + 0S
+							</div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="card">
+							<div class="card-header">VM 4</div>
+							<div class="card-body">
+								1P + 0S, 0P + 0S
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row" style="margin-top: 3vh">
+					<div class="col">
+						<div class="card">
+							<div class="card-header">Pub Settings</div>
+							<div class="card-body">
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item">one</li>
+									<li class="list-group-item">two</li>
+									<li class="list-group-item">three</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="card">
+							<div class="card-header">Pub Settings</div>
+							<div class="card-body">
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item">one</li>
+									<li class="list-group-item">two</li>
+									<li class="list-group-item">three</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row" style="margin-top: 3vh">
+					<div class="col">
+						<div class="card">
+							<div class="card-header">Pub Settings</div>
+							<div class="card-body">
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item">one</li>
+									<li class="list-group-item">two</li>
+									<li class="list-group-item">three</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="card">
+							<div class="card-header">Pub Settings</div>
+							<div class="card-body">
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item">one</li>
+									<li class="list-group-item">two</li>
+									<li class="list-group-item">three</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<div class="col-8">
+		<div class="card run-left-col" style="min-height: 85vh; max-height: 85vh; overflow-y: scroll;">
+			<div class="card-header">All Tests</div>
+			<div class="card-body">
+				<table class="table table-hover" style="text-align: center">
+					<thead>
+						<tr>
+							<th><ion-icon name="checkbox-outline"></ion-icon></th>
+							<th>Test</th>
+							<th>Config</th>
+							<th>Run</th>
+							<th>Duration</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="table-primary">
+							<td><ion-icon name="checkmark-outline"></ion-icon></td>
+							<td>test_name_01</td>
+							<td>config_01</td>
+							<td>1</td>
+							<td>06:00:00</td>
+						</tr>
+						<tr class="table-success">
+							<td>
+								<div class="spinner-border spinner-border-sm text-success" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							</td>
+							<td>test_name_01</td>
+							<td>config_01</td>
+							<td>1</td>
+							<td>06:00:00</td>
+						</tr>
+						<tr class="table-secondary">
+							<td><ion-icon name="hourglass-outline"></ion-icon></td>
+							<td>test_name_01</td>
+							<td>config_01</td>
+							<td>1</td>
+							<td>06:00:00</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}

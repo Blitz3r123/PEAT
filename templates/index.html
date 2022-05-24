@@ -34,10 +34,16 @@
 				</div>
 				<div class="card-body">
 					<p class="card-text">
-						<div class="spinner-border spinner-border-sm text-success" role="status">
-							<span class="visually-hidden">Loading...</span>
-						</div>
-						<span class="text-success fw-bold">{{data["current_test"]}}</span>
+						<span class="text-success fw-bold">
+						{% if data["current_test"]%}
+							<div class="spinner-border spinner-border-sm text-success" role="status">
+								<span class="visually-hidden">Loading...</span>
+							</div>
+							{{data["current_test"]}}
+						{% else %}
+							No tests currently running.
+						{% endif %}
+						</span>
 					</p>
 					<hr>
 					<p class="card-text">
