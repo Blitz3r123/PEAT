@@ -1,5 +1,5 @@
 import os
-import pythoncom
+import json
 from socket import *
 from os.path import exists
 import re
@@ -279,3 +279,15 @@ def get_test_details(ssh, test_name, config_file):
         test["mal_sub_settings"] = get_settings('sub', mal_sub_settings)
     sftp.close()
     return test
+
+def get_config_content(ssh, config_file):
+    config_content = None
+    sftp = ssh.open_sftp()
+    
+    config_file_path = os.path.join(PTS_DIR, os.path.join("configs", config_file))
+    
+    with sftp.open(config_file_path, 'r') as f:
+        config_content = f.readlines()
+    
+    sftp.close()
+    return config_content

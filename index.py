@@ -53,6 +53,10 @@ def create(test_name, config_file):
     data["mal_pub_amount"] = sum(data["mal_pub_alloc"])
     data["sub_amount"] = sum(data["sub_alloc"])
     data["mal_sub_amount"] = sum(data["mal_sub_alloc"])
+    config_content = get_config_content(ssh, config_file)
+    config_content = "".join(config_content).replace("\\n", "\n")
+    pprint(json.dumps(json.loads(config_content), indent = 4, sort_keys = True))
+    data["config_content"] = config_content
     
     return render_template(
         'create_view_test.html', 
