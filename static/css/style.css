@@ -18,3 +18,7 @@
 {scrollbar-width: none;}
 
 .vm-pubsub-allocation, .vm-mal-pubsub-allocation{font-weight: bold}
+
+td > a, td > a:hover{
+    color: inherit;
+}

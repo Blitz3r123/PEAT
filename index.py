@@ -65,7 +65,15 @@ def create(test_name, config_file):
 
 @app.route("/run")
 def run():
-    return render_template('run.html')
+    ssh = connect_to_vm()
+    data = {
+        "current_test": None,
+        "defined_tests": []
+    }
+    data["current_test"], data["current_test_config"] = get_current_test(ssh)
+    data["defined_tests"] = collect_defined_tests(ssh)
+    pprint(data)
+    return render_template('run.html', data=data)
 
 @app.route("/analyse")
 def analyse():

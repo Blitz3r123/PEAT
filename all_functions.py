@@ -60,6 +60,16 @@ def get_files(ssh, dir_path):
                 
     return all_files
 
+def get_test_config(ssh, test_name):
+    # TODO: THIS
+    test_config = None
+    sftp = ssh.open_sftp()
+    
+    pprint(sftp.listdir(PTS_DIR))
+    
+    sftp.close()
+    return test_config
+
 def get_test_amount(ssh, type):
     sftp = ssh.open_sftp()
     pts_files = sftp.listdir(PTS_DIR)
@@ -101,8 +111,10 @@ def get_nums_from_string(text):
     """
     return [int(s) for s in re.findall(r'\d+', text)]
 
-def assign_test_statuses(defined_tests, testbat_dir):
-    curdir_files = get_files(os.path.dirname(testbat_dir))
+def assign_test_statuses(ssh, defined_tests):
+    # curdir_files = get_files(os.path.dirname(testbat_dir))
+    sftp = ssh.open_sftp()
+    curdir_files = sftp.listdir(PTS_DIR)
     for test in defined_tests:
         name = test["name"]
         if len([file for file in curdir_files if name in file and 'metadata' in file]) > 0:
@@ -140,19 +152,7 @@ def assign_test_statuses(defined_tests, testbat_dir):
                     test["status"] = "error"
         else:
             test["status"] = "pending"
-
-def monitor_tests():
-    PTS_dir = "C:\\Users\\acwh025\OneDrive - City, University of London\\PhD\\PAT\\PATS"
-
-    testbat_dir = os.path.join(PTS_dir, "test.bat")
-
-    if not exists(testbat_dir):
-        console.print("test.bat file not found.", style="bold red")
-        raise Exception()
-
-    defined_tests = collect_defined_tests(testbat_dir)
-    assign_test_statuses(defined_tests, testbat_dir)
-    return defined_tests
+        sftp.close()
 
 def get_test_participant_amounts(ssh, tests):
     sftp = ssh.open_sftp()
@@ -191,6 +191,7 @@ def collect_defined_tests(ssh):
                     test["runs"] = get_nums_from_string(line.split(" ")[4])[0]
                     defined_tests.append(test)     
     get_test_participant_amounts(ssh, defined_tests)
+    assign_test_statuses(ssh, defined_tests)
     sftp.close()
     return defined_tests
 
@@ -205,8 +206,12 @@ def get_current_test(ssh):
                 if 'Test Duration' not in contents[-1]:
                     cur_test = file
         
-    return cur_test
+    cur_test_config = None
+    if cur_test is not None:
+        cur_test_config = get_test_config(ssh, cur_test)
+    
     sftp.close()                    
+    return cur_test, cur_test_config
 
 def get_settings(type, settings):
     if 'pub' in type:
