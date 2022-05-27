@@ -1,8 +1,87 @@
 {% extends 'base.html' %}
 
 {% block title %}
-	DDPAT - Analyse Results
+	PEAT - Analyse Results
+{% endblock %}
+
+{% block pagetitle %}
+Analyse
 {% endblock %}
 
 {% block content %}
+<div class="row">
+	<div class="col-4">
+		<div class="card">
+			<div class="card-header"><h3>Issues</h3></div>
+			<div class="card-body hide-scrollbar" style="min-height: 80vh; max-height: 80vh; overflow-y: scroll;">
+				<textarea style="width: 100%; min-height: 200vh">
+					{% if data["errors"] == ['']%}
+					No issues found...
+					{% else %}
+					{{data["errors"]}}
+					{% endif %}
+				</textarea>
+			</div>
+		</div>
+	</div>
+	<div class="col-8">
+		<div class="card">
+			<div class="card-body hide-scrollbar" style="min-height: 86.5vh; max-height: 86.5vh; overflow-y: scroll;">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Test</th>
+							<th>Has Config</th>
+							<th>Config Runs</th>
+							<th>Actual Runs</th>
+							<th>Config Participants</th>
+							<th>Result Participants</th>
+							<th>Duration</th>
+						</tr>
+					</thead>
+					<tbody style="text-align: center">
+						<tr class="table-success">
+							<td>test_name</td>
+							<td><ion-icon name="checkmark-outline"></ion-icon></td>
+							<td>5</td>
+							<td>5</td>
+							<td style="font-family: consolas">
+								<p class="analyse-participants-row text-success">
+									<span>10P</span>
+									<span>10S</span>
+								</p>
+								<p class="analyse-participants-row text-danger">
+									<span>10P</span>
+									<span>10S</span>
+								</p>
+								<hr>
+								<p class="analyse-participants-row">
+									<span>10P</span>
+									<span>10S</span>
+								</p>
+							</td>
+							<td style="font-family: consolas">
+								<p><strong>Run 1</strong></p>
+								<p class="analyse-participants-row text-success">
+									<span>10P</span>
+									<span>10S</span>
+								</p>
+								<p class="analyse-participants-row text-danger">
+									<span>10P</span>
+									<span>10S</span>
+								</p>
+								<hr>
+								<p class="analyse-participants-row">
+									<span>10P</span>
+									<span>10S</span>
+								</p>
+							</td>
+							<td style="font-family: consolas">6:02:16</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}

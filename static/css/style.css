@@ -8,13 +8,15 @@
 #create-test-config-container::-webkit-scrollbar,
 #create-test-list::-webkit-scrollbar,
 #test-title::-webkit-scrollbar, 
-.run-left-col::-webkit-scrollbar
+.run-left-col::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar
 {display: none;}
 
 #create-test-config-container,
 #create-test-list,
 #test-title, 
-.run-left-col
+.run-left-col,
+.hide-scrollbar
 {scrollbar-width: none;}
 
 .vm-pubsub-allocation, .vm-mal-pubsub-allocation{font-weight: bold}
@@ -22,3 +24,5 @@
 td > a, td > a:hover{
     color: inherit;
 }
+
+.analyse-participants-row{display: flex; justify-content: space-evenly}

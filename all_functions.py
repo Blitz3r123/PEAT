@@ -1,9 +1,12 @@
+import time
 import os
+from pathlib import Path
 import json
+import stat
 from socket import *
 from os.path import exists
 import re
-from datetime import datetime
+import datetime
 from statistics import *
 from pprint import pprint
 import paramiko
@@ -42,7 +45,7 @@ def get_files(ssh, dir_path):
     """
     if ssh:
         sftp = ssh.open_sftp()
-        file_list = sftp.listdir(dir_path)
+        file_list = sftp.listdir(str(dir_path))
         all_files = file_list
         sftp.close()
     else:
@@ -291,3 +294,238 @@ def get_config_content(ssh, config_file):
     
     sftp.close()
     return config_content
+
+def get_test_folders():
+    """
+    1. Get list of folders
+    2. Get list of tests
+    3. Find the matches and return the list of folders
+    """
+    ssh = connect_to_vm()
+    sftp = ssh.open_sftp()
+    
+    folders = []
+    # 1. Get list of folders
+    for fileattr in sftp.listdir_attr(PTS_DIR):
+        if stat.S_ISDIR(fileattr.st_mode):
+            folders.append(fileattr.filename)
+
+    # 2. Get list of tests
+    tests = []
+    test_bat = os.path.join(PTS_DIR, 'test.bat')
+    with sftp.open(test_bat, 'r') as f:
+        contents = f.readlines()
+    tests = [line.split("controller.py")[1].split("./configs")[0].strip() for line in contents if 'controller.py' in line]
+
+    # 3. Find the matches and return the list of folders
+    test_folders = []
+    for test in tests:
+        if len([folder for folder in folders if test in folder]) > 0:
+            test_folders.append([folder for folder in folders if test in folder][0])
+
+    sftp.close()
+    return test_folders
+
+def format_test_titles(test_folders):
+    """
+      Takes folder names and formats them into titles.
+    
+      Parameters:
+        test_folders [string]: Array of all folder names.
+    
+      Returns:
+        new_files_names [string]: Array of new formatted folder names. 
+    """
+    new_file_names = []
+
+    for file in test_folders:
+        if "\\" in file:
+            new_file_name = file.split("\\")[1]
+        else:
+            new_file_name = file
+        split_new_file_name = new_file_name.split("_")
+        has_single_digit = len(split_new_file_name[1]) == 1
+        
+        if has_single_digit:
+            split_new_file_name[1] = "0" + split_new_file_name[1]
+            new_file_names.append((" ").join(split_new_file_name).replace("\\", " ").replace("/", " ").replace("data ", "").title())    
+        else:
+            new_file_names.append(new_file_name.replace("_", " ").replace("\\", " ").replace("/", " ").replace("data ", "").title())
+
+    return new_file_names
+
+def get_configs(test_folders, config_files, data):
+    """
+      Checks if config file is present, if so then appends True and config_file location, if not, it appends False and empty string to data['config_file']
+    
+      Parameters:
+        test_folders [string]: Array of test_folders
+        config_files [string]: Array of config_files
+        data [too advanced]: Huge data structure containing all information
+    
+      Returns:
+        None 
+    """
+    for file in test_folders:
+        if file + "_metadata.txt" in config_files:
+            data['has_config'].append(True)
+            data["config_files"].append(file + "_metadata.txt")
+        else:
+            data['has_config'].append(False)
+            data["config_files"].append("")
+            
+def get_data_runs(test_folders):
+    """
+      Returns the amount of run_n folders within the test folders for each test.
+    
+      Parameters:
+        test_folders [string]: Array of test_folders.
+    
+      Returns:
+         runs_per_test [int]: Array containing the numbers of run_n folders for each test within test_folders.
+    """
+    ssh = connect_to_vm()
+    sftp = ssh.open_sftp()
+    return [len([file for file in sftp.listdir(os.path.join(PTS_DIR, file)) if '.csv' not in file and 'run_' in file]) for file in test_folders]
+
+def get_config_runs_and_participants(ssh, data):
+    """
+      Read the config file per test and store its pub/sub and mal_pub/mal_sub counts as well as how many runs there were.
+    
+      Parameters:
+        data [too advanced]: Single huge data structure containing all information.
+    
+      Returns:
+        None 
+    """
+    sftp = ssh.open_sftp()
+    for file in data['config_files']:
+        if len(file) > 0:
+            with sftp.open(os.path.join(PTS_DIR, file).replace("[green]", "").replace("[/green]", ""), "r") as f:
+                contents = f.readlines()
+                
+                pub_amounts = "".join([line for line in contents if '"pub_amount"' in line])
+                mal_pub_amounts = "".join([line for line in contents if '"mal_pub_amount"' in line])
+                sub_amounts = "".join([line for line in contents if '"sub_amount"' in line])
+                mal_sub_amounts = "".join([line for line in contents if '"mal_sub_amount"' in line])
+
+                data['pub_count'].append(sum(get_nums_from_string(pub_amounts)))
+                data['mal_pub_count'].append(sum(get_nums_from_string(mal_pub_amounts)))
+                data['sub_count'].append(sum(get_nums_from_string(sub_amounts)))
+                data['mal_sub_count'].append(sum(get_nums_from_string(mal_sub_amounts)))
+                
+                restart_lines = [line for line in contents if 'Restart' in line]
+
+            restart_counts = {
+                "vm1": 0,
+                "vm2": 0,
+                "vm3": 0,
+                "vm4": 0
+            }
+            for line in restart_lines:
+                if "10.200.51.21" in line:
+                    restart_counts["vm1"] = restart_counts["vm1"] + 1
+                elif "10.200.51.22" in line:
+                    restart_counts["vm2"] = restart_counts["vm2"] + 1
+                elif "10.200.51.23" in line:
+                    restart_counts["vm3"] = restart_counts["vm3"] + 1
+                elif "10.200.51.24" in line:
+                    restart_counts["vm4"] = restart_counts["vm4"] + 1
+
+            data['config_runs'].append(restart_counts[max(restart_counts, key=restart_counts.get)])
+        else:
+            data['config_runs'].append(0)
+            data['pub_count'].append(0)
+            data['mal_pub_count'].append(0)
+            data['sub_count'].append(0)
+            data['mal_sub_count'].append(0)
+
+        data["errors"].append("")
+    sftp.close()
+        
+def get_run_participants(ssh, data):
+    sftp = ssh.open_sftp()
+    for i in range(len(data['test_files'])):
+        runs_arr = []
+        filename = data['test_files'][i]
+        runs = data['config_runs'][i]
+        run_folders = int(data['data_runs'][i])
+
+        if int(runs) == run_folders or run_folders > 0:
+            for i in range(run_folders):
+                run_obj = {
+                    "run_n": 0,
+                    "pub_count": 0,
+                    "sub_count": 0,
+                    "mal_pub_count": 0,
+                    "mal_sub_count": 0
+                }
+                # Get path to run_n folder
+                run_dir = os.path.join(filename, "run_" + str(i + 1))
+                # Read run_n folder contents
+                all_files = sftp.listdir(os.path.join(PTS_DIR, run_dir))
+                all_raw_files = [file for file in all_files if '.csv' in file and 'clean_' not in file]
+
+                pub_count = len([file for file in all_raw_files if 'pub_' in file and 'mal_' not in file])
+                mal_pub_count = len([file for file in all_raw_files if 'pub_' in file and 'mal_' in file])
+                sub_count = len([file for file in all_raw_files if 'sub_' in file and 'mal_' not in file])
+                mal_sub_count = len([file for file in all_raw_files if 'sub_' in file and 'mal_' in file])
+                
+                run_obj['run_n'] = i + 1
+                run_obj['pub_count'] = pub_count                
+                run_obj['mal_pub_count'] = mal_pub_count                
+                run_obj['sub_count'] = sub_count                
+                run_obj['mal_sub_count'] = mal_sub_count
+                
+                runs_arr.append(run_obj)
+
+                run_obj = {
+                    "run_n": 0,
+                    "pub_count": 0,
+                    "sub_count": 0,
+                    "mal_pub_count": 0,
+                    "mal_sub_count": 0
+                }
+
+        data['run_participants'].append(runs_arr)
+    sftp.close()
+
+def get_total_test_durations(ssh, data):
+    sftp = ssh.open_sftp()
+    for i in range(len(data['config_files'])):
+        config_file = data['config_files'][i]
+        has_config = data['has_config'][i]
+
+        if has_config:
+            with sftp.open(os.path.join(PTS_DIR, config_file), "r") as f:
+                file_contents = f.readlines()
+                try:
+                    test_duration = [line for line in file_contents if "Duration" in line]
+                    if len(test_duration) > 0:
+                        test_duration = test_duration[0]
+                        test_duration = test_duration.replace("Test Duration: ", "")
+                        test_duration = test_duration.split(".")[0]
+                    else:
+                        test_duration = "-"
+                except Exception as e:
+                    print("Error: ")
+                    print(e)
+                    test_duration = "-"
+        else:
+            test_duration = "-"
+
+        data['total_test_durations'].append(test_duration)
+    sftp.close()
+    
+def convert_to_secs(time_string):
+    """
+      Converts hh:mm:ss to seconds.
+    
+      Parameters:
+        time_string (string): String value of the time in the format hh:mm:ss.
+    
+      Returns:
+        time_in_seconds (int): Number of seconds 
+    """
+    x = time.strptime(time_string,'%H:%M:%S')
+    return int(datetime.timedelta(hours=x.tm_hour,minutes=x.tm_min,seconds=x.tm_sec).total_seconds())
