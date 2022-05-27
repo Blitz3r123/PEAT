@@ -254,5 +254,6 @@ def analyse():
 
             execution_times = []
 
-        data['errors'][i] = error
+        data['errors'][i] = error.lstrip()
+    data["amount"] = range(len(data['test_files']))
     return render_template('analyse.html', data=data)

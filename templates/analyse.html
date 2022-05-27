@@ -14,13 +14,7 @@ Analyse
 		<div class="card">
 			<div class="card-header"><h3>Issues</h3></div>
 			<div class="card-body hide-scrollbar" style="min-height: 80vh; max-height: 80vh; overflow-y: scroll;">
-				<textarea style="width: 100%; min-height: 200vh">
-					{% if data["errors"] == ['']%}
-					No issues found...
-					{% else %}
-					{{data["errors"]}}
-					{% endif %}
-				</textarea>
+				<textarea style="width: 100%; min-height: 200vh">{% if data["errors"] == ['']%}No issues found...{% else %}{{data["errors"]}}{% endif %}</textarea>
 			</div>
 		</div>
 	</div>
@@ -40,44 +34,91 @@ Analyse
 						</tr>
 					</thead>
 					<tbody style="text-align: center">
-						<tr class="table-success">
-							<td>test_name</td>
-							<td><ion-icon name="checkmark-outline"></ion-icon></td>
-							<td>5</td>
-							<td>5</td>
-							<td style="font-family: consolas">
-								<p class="analyse-participants-row text-success">
-									<span>10P</span>
-									<span>10S</span>
-								</p>
-								<p class="analyse-participants-row text-danger">
-									<span>10P</span>
-									<span>10S</span>
-								</p>
-								<hr>
-								<p class="analyse-participants-row">
-									<span>10P</span>
-									<span>10S</span>
-								</p>
-							</td>
-							<td style="font-family: consolas">
-								<p><strong>Run 1</strong></p>
-								<p class="analyse-participants-row text-success">
-									<span>10P</span>
-									<span>10S</span>
-								</p>
-								<p class="analyse-participants-row text-danger">
-									<span>10P</span>
-									<span>10S</span>
-								</p>
-								<hr>
-								<p class="analyse-participants-row">
-									<span>10P</span>
-									<span>10S</span>
-								</p>
-							</td>
-							<td style="font-family: consolas">6:02:16</td>
-						</tr>
+						{%  for i in data["amount"] %}
+							{% if data["errors"][i] == "" %}
+							<tr class="table-success">
+								<td>{{data["test_names"][i]}}</td>
+								<td><ion-icon name="checkmark-outline"></ion-icon></td>
+								<td>{{data["config_runs"][i]}}</td>
+								<td>{{data["data_runs"][i]}}</td>
+								<td style="font-family: consolas">
+									<p class="analyse-participants-row text-success">
+										<span>{{data["pub_count"][i]}}P</span>
+										<span>{{data["sub_count"][i]}}S</span>
+									</p>
+									<p class="analyse-participants-row text-danger">
+										<span>{{data["mal_pub_count"][i]}}P</span>
+										<span>{{data["mal_sub_count"][i]}}S</span>
+									</p>
+									<hr>
+									<p class="analyse-participants-row">
+										<span>{{data["pub_count"][i] + data["mal_pub_count"][i]}}P</span>
+										<span>{{data["sub_count"][i] + data["mal_sub_count"][i]}}S</span>
+									</p>
+								</td>
+								<td style="font-family: consolas">
+									{% for run in data["run_participants"][i]%}
+										<p><strong>Run {{run["run_n"]}}</strong></p>
+										<p class="analyse-participants-row text-success">
+											<span>{{run["pub_count"]}}P</span>
+											<span>{{run["sub_count"]}}S</span>
+										</p>
+										<p class="analyse-participants-row text-danger">
+											<span>{{run["mal_pub_count"]}}P</span>
+											<span>{{run["mal_sub_count"]}}S</span>
+										</p>
+										<hr>
+										<p class="analyse-participants-row">
+											<span>{{run["pub_count"] + run["mal_pub_count"]}}P</span>
+											<span>{{run["sub_count"] + run["mal_sub_count"]}}S</span>
+										</p>
+									{% endfor %}
+								</td>
+								<td style="font-family: consolas">{{data["total_test_durations"][i]}}</td>
+							</tr>
+							{% else %}
+							<tr class="table-danger">
+								<td>{{data["test_names"][i]}}</td>
+								<td><ion-icon name="checkmark-outline"></ion-icon></td>
+								<td>{{data["config_runs"][i]}}</td>
+								<td>{{data["data_runs"][i]}}</td>
+								<td style="font-family: consolas">
+									<p class="analyse-participants-row text-success">
+										<span>{{data["pub_count"][i]}}P</span>
+										<span>{{data["sub_count"][i]}}S</span>
+									</p>
+									<p class="analyse-participants-row text-danger">
+										<span>{{data["mal_pub_count"][i]}}P</span>
+										<span>{{data["mal_sub_count"][i]}}S</span>
+									</p>
+									<hr>
+									<p class="analyse-participants-row">
+										<span>{{data["pub_count"][i] + data["mal_pub_count"][i]}}P</span>
+										<span>{{data["sub_count"][i] + data["mal_sub_count"][i]}}S</span>
+									</p>
+								</td>
+								<td style="font-family: consolas">
+									{% for run in data["run_participants"][i]%}
+										<p><strong>Run {{run["run_n"]}}</strong></p>
+										<p class="analyse-participants-row text-success">
+											<span>{{run["pub_count"]}}P</span>
+											<span>{{run["sub_count"]}}S</span>
+										</p>
+										<p class="analyse-participants-row text-danger">
+											<span>{{run["mal_pub_count"]}}P</span>
+											<span>{{run["mal_sub_count"]}}S</span>
+										</p>
+										<hr>
+										<p class="analyse-participants-row">
+											<span>{{run["pub_count"] + run["mal_pub_count"]}}P</span>
+											<span>{{run["sub_count"] + run["mal_sub_count"]}}S</span>
+										</p>
+									{% endfor %}
+								</td>
+								<td style="font-family: consolas">{{data["total_test_durations"][i]}}</td>
+							</tr>
+							{% endif %}
+						{% endfor %}
 					</tbody>
 				</table>
 			</div>
