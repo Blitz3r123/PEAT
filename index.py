@@ -1,5 +1,6 @@
 from gc import collect
-from flask import Flask, render_template
+import mimetypes
+from flask import Flask, render_template, send_from_directory
 from matplotlib.pyplot import connect
 
 from all_functions import *
@@ -9,39 +10,38 @@ app = Flask(__name__)
 
 PTS_DIR = str(Path("C:/Users/acwh025/Downloads/PTS").absolute())
 
+ssh = connect_to_vm()
+        
+index_data = {
+    "queued_test_amount": 0,
+    "completed_test_amount": 0,
+    "test_error_amount": 0,
+    "current_test": ""
+}
+
+index_data["queued_test_amount"] = get_test_amount(ssh, 'queued')
+index_data["completed_test_amount"] = get_test_amount(ssh, 'completed')
+index_data["current_test"] = get_current_test(ssh)
+
 @app.route("/")
 def index():
-    ssh = connect_to_vm()
-        
-    data = {
-        "queued_test_amount": 0,
-        "completed_test_amount": 0,
-        "test_error_amount": 0,
-        "current_test": ""
-    }
-    
-    data["queued_test_amount"] = get_test_amount(ssh, 'queued')
-    data["completed_test_amount"] = get_test_amount(ssh, 'completed')
-    data["current_test"] = get_current_test(ssh)
-    
-    return render_template('index.html', data=data)
+    return render_template('index.html', data=index_data)
 
-@app.route("/create")
-def create_base():
-    ssh = connect_to_vm()
-    data = {
+create_data = {
         "tests": [],
         "test_amount": 0
     }
     
-    data["tests"] = collect_defined_tests(ssh)
-    data["test_amount"] = len(collect_defined_tests(ssh))
-    
-    return render_template('create.html', data=data)
+create_data["tests"] = collect_defined_tests(ssh)
+create_data["test_amount"] = len(collect_defined_tests(ssh))
+
+@app.route("/create")
+def create_base():
+    return render_template('create.html', data=create_data)
 
 @app.route("/create/<string:test_name>/<string:config_file>")
 def create(test_name, config_file):
-    ssh = connect_to_vm()
+    # ssh = connect_to_vm()
     data = {
         "tests": [],
         "test_amount": 0
@@ -68,17 +68,16 @@ def create(test_name, config_file):
         mal_sub_settings=data['mal_sub_settings']
     )
 
-@app.route("/run")
-def run():
-    ssh = connect_to_vm()
-    data = {
+run_data = {
         "current_test": None,
         "defined_tests": []
     }
-    data["current_test"], data["current_test_config"] = get_current_test(ssh)
-    data["defined_tests"] = collect_defined_tests(ssh)
-    pprint(data)
-    return render_template('run.html', data=data)
+run_data["current_test"], run_data["current_test_config"] = get_current_test(ssh)
+run_data["defined_tests"] = collect_defined_tests(ssh)
+
+@app.route("/run")
+def run():
+    return render_template('run.html', data=run_data)
 
 @app.route("/analyse")
 def analyse():
