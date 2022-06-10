@@ -1,7 +1,4 @@
-from gc import collect
-import mimetypes
-from flask import Flask, render_template, send_from_directory
-from matplotlib.pyplot import connect
+from flask import Flask, render_template
 
 from all_functions import *
 from PRIVATE import *
